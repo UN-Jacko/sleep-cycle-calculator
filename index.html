@@ -69,6 +69,7 @@
         <form id="sleepForm">
             <label for="bedtime">就寝時刻 (例: 22:00)</label>
             <input type="time" id="bedtime" required>
+            <button type="button" onclick="setCurrentTime('bedtime')">現在時刻を設定</button>
 
             <label for="wakeGoal">起床したい時刻 (例: 08:00)</label>
             <input type="time" id="wakeGoal" required>
@@ -115,6 +116,13 @@
                 <p>睡眠時間: <strong>${Math.floor(sleepTime / (60 * 60 * 1000))}時間${(sleepTime / (60 * 1000)) % 60}分</strong></p>
             `;
             resultDiv.style.display = 'block';
+        }
+
+        function setCurrentTime(inputId) {
+            const now = new Date();
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            document.getElementById(inputId).value = `${hours}:${minutes}`;
         }
     </script>
 </body>
