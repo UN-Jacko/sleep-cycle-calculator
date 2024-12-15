@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>睡眠サイクル計算アプリ</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f9;
+            color: #333;
+        }
+        header {
+            background-color: #6200ea;
+            color: #fff;
+            padding: 10px 20px;
+            text-align: center;
+        }
+        main {
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 20px;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        label {
+            display: block;
+            margin-top: 15px;
+            font-weight: bold;
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #6200ea;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #3700b3;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #e8f5e9;
+            border: 1px solid #c8e6c9;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>睡眠サイクル計算アプリ</h1>
+    </header>
+    <main>
+        <form id="sleepForm">
+            <label for="bedtime">就寝時刻 (例: 22:00)</label>
+            <input type="time" id="bedtime" required>
+
+            <label for="wakeGoal">起床したい時刻 (例: 08:00)</label>
+            <input type="time" id="wakeGoal" required>
+
+            <button type="button" onclick="calculateSleepCycle()">計算</button>
+        </form>
+
+        <div id="result" class="result" style="display: none;"></div>
+    </main>
+
+    <script>
+        function calculateSleepCycle() {
+            const bedtimeInput = document.getElementById('bedtime').value;
+            const wakeGoalInput = document.getElementById('wakeGoal').value;
+
+            if (!bedtimeInput || !wakeGoalInput) {
+                alert('就寝時刻と起床したい時刻を入力してください。');
+                return;
+            }
+
+            const bedtime = new Date(`1970-01-01T${bedtimeInput}:00`);
+            const wakeGoal = new Date(`1970-01-01T${wakeGoalInput}:00`);
+
+            if (wakeGoal <= bedtime) {
+                wakeGoal.setDate(wakeGoal.getDate() + 1);
+            }
+
+            bedtime.setMinutes(bedtime.getMinutes() + 15); // 就寝時刻の15分後
+            wakeGoal.setMinutes(wakeGoal.getMinutes() - 30); // 起床したい時刻の30分前
+
+            const sleepCycle = 90 * 60 * 1000; // 1時間30分（90分）をミリ秒で表現
+            let sleepTime = wakeGoal - bedtime;
+            sleepTime -= sleepTime % sleepCycle; // 睡眠時間を90分周期に調整
+
+            const wakeTime = new Date(bedtime.getTime() + sleepTime);
+
+            const formatTime = (date) => {
+                return date.toTimeString().slice(0, 5);
+            };
+
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = `
+                <p>起床すべき時刻: <strong>${formatTime(wakeTime)}</strong></p>
+                <p>睡眠時間: <strong>${Math.floor(sleepTime / (60 * 60 * 1000))}時間${(sleepTime / (60 * 1000)) % 60}分</strong></p>
+            `;
+            resultDiv.style.display = 'block';
+        }
+    </script>
+</body>
+</html>
